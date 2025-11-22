@@ -1,12 +1,7 @@
-// src/services/noteService.ts
 import axios, { AxiosInstance } from "axios";
 import { Note, NoteTag } from "../types/note";
 
 const TOKEN = import.meta.env.VITE_NOTEHUB_TOKEN as string | undefined;
-
-if (!TOKEN) {
-  alert("NO TOKEN!!!");
-}
 
 const api: AxiosInstance = axios.create({
   baseURL: "https://notehub-public.goit.study/api",
@@ -16,11 +11,9 @@ const api: AxiosInstance = axios.create({
   },
 });
 
-interface FetchNotesResponse {
-  data: Note[];
-  total: number;
-  page: number;
-  perPage: number;
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
 }
 
 export interface CreateNoteParams {
@@ -39,13 +32,10 @@ export const fetchNotes = async (
   search?: string
 ): Promise<FetchNotesResponse> => {
   const params: Record<string, string | number> = { page, perPage };
+  if (search && search.trim() !== "") params.search = search.trim();
 
-  if (search && search.trim() !== "") {
-    params.search = search.trim();
-  }
-
-  const { data } = await api.get<FetchNotesResponse>("/notes", { params });
-  return data;
+  const response = await api.get("/notes", { params });
+  return response.data;
 };
 
 export const createNote = async (note: CreateNoteParams): Promise<Note> => {

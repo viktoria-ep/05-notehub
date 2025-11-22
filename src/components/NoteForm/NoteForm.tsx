@@ -1,4 +1,3 @@
-// src/components/NoteForm/NoteForm.tsx
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -11,7 +10,6 @@ interface NoteFormProps {
   onSuccess?: () => void;
 }
 
-// Схема валидации формы через Yup
 const validationSchema = Yup.object({
   title: Yup.string().min(3).max(50).required("Required"),
   content: Yup.string().max(500),
@@ -23,11 +21,10 @@ const validationSchema = Yup.object({
 export default function NoteForm({ onCancel, onSuccess }: NoteFormProps) {
   const queryClient = useQueryClient();
 
-  // Мутация для создания новой заметки
   const mutation = useMutation({
     mutationFn: createNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      queryClient.invalidateQueries({ queryKey: ["notes"], exact: false });
       onSuccess?.();
     },
   });
@@ -43,9 +40,12 @@ export default function NoteForm({ onCancel, onSuccess }: NoteFormProps) {
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
+        onSubmit={(values, { setSubmitting, resetForm }) => {
           mutation.mutate(values, {
-            onSettled: () => setSubmitting(false),
+            onSettled: () => {
+              setSubmitting(false);
+              resetForm();
+            },
           });
         }}
       >
