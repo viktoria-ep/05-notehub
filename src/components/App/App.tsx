@@ -25,10 +25,15 @@ export default function App(): React.ReactElement {
   const notes = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 0;
 
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox value={search} onChange={setSearch} />
+        <SearchBox value={search} onChange={handleSearch} />
 
         {totalPages > 1 && (
           <Pagination

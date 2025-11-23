@@ -19,10 +19,17 @@ export default function Modal({
       document.body.style.overflow = "";
     }
 
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKey);
+
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKey);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
