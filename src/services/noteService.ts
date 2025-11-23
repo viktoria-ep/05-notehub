@@ -34,7 +34,7 @@ export const fetchNotes = async (
   const params: Record<string, string | number> = { page, perPage };
   if (search && search.trim() !== "") params.search = search.trim();
 
-  const response = await api.get("/notes", { params });
+  const response = await api.get<FetchNotesResponse>("/notes", { params });
   return response.data;
 };
 

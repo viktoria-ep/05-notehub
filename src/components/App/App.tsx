@@ -16,9 +16,10 @@ export default function App(): React.ReactElement {
   const [debouncedSearch] = useDebounce(search, 300);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const { data, isError } = useQuery<FetchNotesResponse>({
+  const { data, isError, isLoading } = useQuery<FetchNotesResponse>({
     queryKey: ["notes", page, debouncedSearch],
     queryFn: () => fetchNotes(page, perPage, debouncedSearch),
+    placeholderData: (prev) => prev,
   });
 
   const notes = data?.notes ?? [];
@@ -32,7 +33,6 @@ export default function App(): React.ReactElement {
         {totalPages > 1 && (
           <Pagination
             currentPage={page}
-            perPage={perPage}
             total={totalPages}
             onChange={setPage}
           />
@@ -46,7 +46,11 @@ export default function App(): React.ReactElement {
       <main className={css.container}>
         {isError && <div>Something went wrong.</div>}
 
-        {notes.length > 0 && <NoteList notes={notes} />}
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          notes.length > 0 && <NoteList notes={notes} />
+        )}
       </main>
 
       {isModalOpen && (
